@@ -224,7 +224,7 @@ def detectPlatesInScene(img):
         contours.append(char.contour)
 
     cv2.drawContours(imgContours, contours, -1, (255.0, 255.0, 255.0))
-    cv2.imshow("2b", imgContours)
+    # cv2.imshow("2b", imgContours)
 
     listOfListsOfMatchingCharsInScene = findListOfListsOfMatchingChars(chars)
 
@@ -238,7 +238,7 @@ def detectPlatesInScene(img):
 
         cv2.drawContours(imgContours, contours, -1, color=c)
 
-    cv2.imshow("3", imgContours)
+    # cv2.imshow("3", imgContours)
 
     for listOfMatchingChars in listOfListsOfMatchingCharsInScene:  # for each group of matching chars
         possiblePlate = extractPlate(img, listOfMatchingChars)  # attempt to extract plate
@@ -254,7 +254,7 @@ def detectPlatesInScene(img):
         cv2.line(imgContours, tuple(p2fRectPoints[2]), tuple(p2fRectPoints[3]), (0.0, 0.0, 255.0), 2)
         cv2.line(imgContours, tuple(p2fRectPoints[3]), tuple(p2fRectPoints[0]), (0.0, 0.0, 255.0), 2)
 
-        cv2.imshow("4a", imgContours)
+        # cv2.imshow("4a", imgContours)
 
     return plates
 
@@ -337,12 +337,12 @@ def detectCharsInPlates(listOfPossiblePlates):
                                                                 cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         listOfPossibleCharsInPlate = findPossibleCharsInPlate(possiblePlate.imgGrayscale)
         listOfListsOfMatchingCharsInPlate = findListOfListsOfMatchingChars(listOfPossibleCharsInPlate)
-        if (len(listOfListsOfMatchingCharsInPlate) == 0):
+        if len(listOfListsOfMatchingCharsInPlate) == 0:
             intPlateCounter += 1
             possiblePlate.strChars = ""
             continue
 
-        for i in range(0, len(listOfListsOfMatchingCharsInPlate)):
+        for i in range(len(listOfListsOfMatchingCharsInPlate)):
             listOfListsOfMatchingCharsInPlate[i].sort(key=lambda matchingChar: matchingChar.intCenterX)
             listOfListsOfMatchingCharsInPlate[i] = removeInnerOverlappingChars(listOfListsOfMatchingCharsInPlate[i])
 
@@ -360,21 +360,29 @@ def detectCharsInPlates(listOfPossiblePlates):
     return listOfPossiblePlates
 
 
-for i in range(2, 5):
+for i in range(2, 3):
     file = 'dataset/' + str(i) + '.png'
     img = cv2.imread(file)
     plates = detectPlatesInScene(img)
-    for plate in plates:
-        cv2.imshow('a', plate.imgPlate)
-        cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    # listOfPossiblePlates = detectCharsInPlates(plates)  # detect chars in plates
-    # if len(listOfPossiblePlates) == 0:
+    # print('*'*95, "\nFor {}:".format(file))
+    # for plate in plates:
+    #     gray = cv2.cvtColor(plate.imgPlate, cv2.COLOR_BGR2GRAY)
+    #     chars = pytesseract.image_to_string(gray)
+        # chars = ''.join(c for c in chars if c.isalnum())
+        # print(chars)
+    listOfPossiblePlates = detectCharsInPlates(plates)  # detect chars in plates
+    # for plate in listOfPossiblePlates:
+    #     cv2.imshow('a', plate.imgGrayscale)
+    #     cv2.waitKey(0)
+    #     cv2.destroyAllWindows()
+    # if len(list0OfPossiblePlates) == 0:
     #     print("\nno license plates were detected\n")
     # else:
     #     listOfPossiblePlates.sort(key=lambda x: len(x.strChars), reverse=True)
     #     licPlate = listOfPossiblePlates[0]
-    #     cv2.imshow("imgPlate", licPlate.imgPlate)
-    #     cv2.imshow("imgThresh", licPlate.imgThresh)
-    #     cv2.waitKey(0)
-    #     cv2.destroyAllWindows()
+        # cv2.imshow("imgPlate", licPlate.imgPlate)
+        # cv2.imshow("imgThresh", licPlate.imgThresh)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        # chars = pytesseract.image_to_string(licPlate.imgThresh)
+        # print(chars)
